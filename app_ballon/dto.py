@@ -4,9 +4,9 @@ from dataclasses import dataclass
 # Прочитать про подсчет дробных чисел в программировании.
 @dataclass
 class DTOInput:
-    pressure_oxygen: int
-    pressure_argon: int
-    pressure_nirtogen: int
+    volume_liters: int
+    pressure_bar: int
+    temperature_Celsius: int
 
 
 class DTOOutput:

@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doubler/', include("doubler.urls")),
     path('ballon/', include("app_ballon.urls")),
+    path('vacuum/', include("app_vacuum.urls")),
 ]

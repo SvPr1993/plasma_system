@@ -1,23 +1,25 @@
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render
 from app_ballon.dto import DTOInput
 from app_ballon.usecase import baloon_calculate
 
 #Это объем баллонов для начала работ(залать в setting)
-SIZE_BALLON = 6
+SIZE_BALLON = settings.SIZE_BALLON
 
 
 def app_ballon(request):
-    p_ox = request.GET.get('p_ox')
-    p_ar = request.GET.get('p_ar')
-    p_ni = request.GET.get('p_ni')
+    volume_liters = request.GET.get('volume_liters')
+    pressure_bar = request.GET.get('pressure_bar')
+    temperature_Celsius = request.GET.get('temperature_Celsius')
     try:
-        p_ox_d = int(p_ox)
-        p_ar_d = int(p_ar)
-        p_ni_d = int(p_ni)
+        volume_liters_d = int(volume_liters)
+        pressure_bar_d = int(pressure_bar)
+        temperature_Celsius_d = int(temperature_Celsius)
     except:
         return JsonResponse({"data_type": "Error"})
-    dto = DTOInput(pressure_oxygen=p_ox_d, pressure_argon=p_ar_d, pressure_nirtogen=p_ni_d)
+    dto = DTOInput(volume_liters=volume_liters_d, pressure_bar=pressure_bar_d, temperature_Celsius=temperature_Celsius_d)
+    print(dto)
     result = baloon_calculate(dto, SIZE_BALLON)
 
     print("##########", dto, result)

@@ -1,8 +1,10 @@
+from decouple import config
+
 from app_ballon.dto import DTOInput, DTOOutput
 
-OXYGEN_BALLON = 100
-ARGON_BALLON = 100
-NITROGEN_BALLON = 100
+OXYGEN_BALLON = config("OXYGEN_BALLON")
+ARGON_BALLON = config("ARGON_BALLON")
+NITROGEN_BALLON = config("NITROGEN_BALLON")
 
 
 def baloon_calculate(dto_input, size_ballon) -> DTOOutput:
@@ -11,28 +13,28 @@ def baloon_calculate(dto_input, size_ballon) -> DTOOutput:
     pressure_bar = dto_input.pressure_bar
     temperature_Celsius = dto_input.temperature_Celsius
 
-    mass_kg_oxygen, mass_g_oxygen = pressure_oxygen(volume_liters, pressure_bar, temperature_Celsius)
-    mass_kg_argon, mass_g_argon = pressure_argon(volume_liters, pressure_bar, temperature_Celsius)
-    mass_kg_nitrogen, mass_g_nitrogen = pressure_nitrogen(volume_liters, pressure_bar, temperature_Celsius)
+    mass_kg_oxygen = pressure_oxygen(volume_liters, pressure_bar, temperature_Celsius)
+    mass_kg_argon = pressure_argon(volume_liters, pressure_bar, temperature_Celsius)
+    mass_kg_nitrogen = pressure_nitrogen(volume_liters, pressure_bar, temperature_Celsius)
 
     oxygen_bull = False
     argon_bull = False
     nitrogen_bull = False
     result_bull = False
 
-    if mass_kg_oxygen <= OXYGEN_BALLON:
+    if mass_kg_oxygen <= float(OXYGEN_BALLON):
         print("Работы запрешены")
     else:
         print("Все хорошо")
         oxygen_bull = True
 
-    if mass_kg_argon <= ARGON_BALLON:
+    if mass_kg_argon <= float(ARGON_BALLON):
         print("Работы запрешены")
     else:
         print("Все хорошо")
         argon_bull = True
 
-    if mass_kg_nitrogen <= NITROGEN_BALLON:
+    if mass_kg_nitrogen <= float(NITROGEN_BALLON):
         print("Работы запрешены")
     else:
         print("Все хорошо")
@@ -59,13 +61,8 @@ def pressure_oxygen(volume_liters, pressure_bar, temperature_Celsius):
 
     # Формула: масса = (P * V * M) / (R * T)
     mass_kg_oxygen = (pressure_pascals * volume_cubic_meters * M) / (R * temperature_kelvins)
-    mass_g_oxygen = mass_kg_oxygen * 1000
 
-    print(f"Масса аргона в баллоне:")
-    print(f"  {mass_kg_oxygen:.3f} кг")
-    print(f"  {mass_g_oxygen:.1f} г")
-
-    return mass_kg_oxygen, mass_g_oxygen
+    return mass_kg_oxygen
 
 
 ################## АРГОН
@@ -82,13 +79,8 @@ def pressure_argon(volume_liters, pressure_bar, temperature_Celsius):
 
     # Формула: масса = (P * V * M) / (R * T)
     mass_kg_argon = (pressure_pascals * volume_cubic_meters * M) / (R * temperature_kelvins)
-    mass_g_argon = mass_kg_argon * 1000
 
-    print(f"Масса аргона в баллоне:")
-    print(f"  {mass_kg_argon:.3f} кг")
-    print(f"  {mass_g_argon:.1f} г")
-
-    return mass_kg_argon, mass_g_argon
+    return mass_kg_argon
 
 
 ################## АЗОТ
@@ -105,15 +97,10 @@ def pressure_nitrogen(volume_liters, pressure_bar, temperature_Celsius):
 
     # Формула: масса = (P * V * M) / (R * T)
     mass_kg_nitrogen = (pressure_pascals * volume_cubic_meters * M) / (R * temperature_kelvins)
-    mass_g_nitrogen = mass_kg_nitrogen * 1000
 
-    print(f"Масса азота в баллоне:")
-    print(f"  {mass_kg_nitrogen:.3f} кг")
-    print(f"  {mass_g_nitrogen:.1f} г")
-
-    return mass_kg_nitrogen, mass_g_nitrogen
+    return mass_kg_nitrogen
 
 
 # Нужно возвращать результат в виде json - какие параметры передались после работы функций
-# Прокинуть константы через decouple по принципу приложения IpInfo13
-# Привести формулы в порядок, убрать принты и и так далее
+# +Прокинуть константы через decouple по принципу приложения IpInfo13
+# +Привести формулы в порядок, убрать принты и и так далее

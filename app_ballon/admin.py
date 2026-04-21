@@ -1,3 +1,5 @@
 from django.contrib import admin
+from app_ballon.models import BallonMass
 
-# Register your models here.
+admin.site.register(BallonMass)
+

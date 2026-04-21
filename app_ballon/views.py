@@ -4,9 +4,6 @@ from django.shortcuts import render
 from app_ballon.dto import DTOInput
 from app_ballon.usecase import baloon_calculate
 
-#Это объем баллонов для начала работ(залать в setting)
-SIZE_BALLON = settings.SIZE_BALLON
-
 
 def app_ballon(request):
     volume_liters = request.GET.get('volume_liters')
@@ -20,7 +17,7 @@ def app_ballon(request):
         return JsonResponse({"data_type": "Error"})
     dto = DTOInput(volume_liters=volume_liters_d, pressure_bar=pressure_bar_d, temperature_Celsius=temperature_Celsius_d)
     print(dto)
-    result = baloon_calculate(dto, SIZE_BALLON)
+    result = baloon_calculate(dto)
 
     print("##########", dto, result)
     return JsonResponse({"result": result})

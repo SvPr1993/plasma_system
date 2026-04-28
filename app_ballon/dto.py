@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 
-# Прочитать про подсчет дробных чисел в программировании.
 @dataclass
 class DTOInput:
     volume_liters: int
@@ -12,3 +11,9 @@ class DTOInput:
 class DTOOutput:
     accept_work: bool
 
+
+@dataclass
+class BallonMassDTO:
+    oxygen: int
+    argon: int
+    nitrogen: int

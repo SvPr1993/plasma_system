@@ -15,7 +15,8 @@ def app_ballon(request):
         temperature_Celsius_d = int(temperature_Celsius)
     except:
         return JsonResponse({"data_type": "Error"})
-    dto = DTOInput(volume_liters=volume_liters_d, pressure_bar=pressure_bar_d, temperature_Celsius=temperature_Celsius_d)
+    dto = DTOInput(volume_liters=volume_liters_d, pressure_bar=pressure_bar_d,
+                   temperature_Celsius=temperature_Celsius_d)
     print(dto)
     result = baloon_calculate(dto)
 

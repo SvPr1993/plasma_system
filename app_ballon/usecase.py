@@ -2,24 +2,30 @@ from decouple import config
 import json #json.dumps()
 from app_ballon.dto import DTOInput, DTOOutput
 from app_ballon.models import BallonMass
+from app_ballon.repo import BallonMassRepository
 
 
 def baloon_calculate(dto_input) -> str:
     ''' Эта функция является аркестратором вычислений '''
-    # Todo: сделать вызов к базе данный через репозиторий (файл в котором содержатся все вызовы к базе данных)
-    # todo: Репозиторий должен возращать dto или примитивные типы данный, но не кверисет
+    # +Todo: сделать вызов к базе данный через репозиторий (файл в котором содержатся все вызовы к базе данных)
+    # +todo: Репозиторий должен возращать dto или примитивные типы данный, но не кверисет
     # todo: *Реализовать подключение к репозиторию через интерфейс
-    # +todo: сделать docker-compose и докер файл для запуска проекта
     # todo: погуглуть - как должны взаимодействовать приложения между собой в модульном монолите (usecase одного приложения требуется получить инф-ия usecase другого приложения с точки зрения чистой архитектуры)
     # todo: прочитать про ngnix
     # todo: арендовать сервер для этого проекта myfirstfds-сервер https://my.firstvds.ru/ подключится к нему через ssh, нужен логин пароль и ip-адрес, сервер ubuntu
     # todo: с помощью неросети установить на сервер гит и прописать ключи в гитхабе
     # todo: купить домен для этого проекта
-    ballon_mass = BallonMass.objects.last()
-    OXYGEN_BALLON = ballon_mass.oxygen
-    ARGON_BALLON = ballon_mass.argon
-    NITROGEN_BALLON = ballon_mass.nitrogen
-    print(ballon_mass)
+    # Получаем последнюю запись через репозиторий
+
+    ballon_mass_dto = BallonMassRepository.get_last_ballon_mass()
+    if ballon_mass_dto is None:
+        return "Нет данных о массе газов в баллоне"
+
+    OXYGEN_BALLON = ballon_mass_dto.oxygen
+    ARGON_BALLON = ballon_mass_dto.argon   # argon из DTO – str, приводим к float
+    NITROGEN_BALLON = ballon_mass_dto.nitrogen
+    print(ballon_mass_dto)
+
     volume_liters = dto_input.volume_liters
     pressure_bar = dto_input.pressure_bar
     temperature_Celsius = dto_input.temperature_Celsius

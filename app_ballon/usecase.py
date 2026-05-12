@@ -1,5 +1,5 @@
 from decouple import config
-import json #json.dumps()
+import json  # json.dumps()
 from app_ballon.dto import DTOInput, DTOOutput
 from app_ballon.models import BallonMass
 from app_ballon.repo import BallonMassRepository
@@ -7,14 +7,14 @@ from app_ballon.repo import BallonMassRepository
 
 def baloon_calculate(dto_input) -> str:
     ''' Эта функция является аркестратором вычислений '''
-    # +Todo: сделать вызов к базе данный через репозиторий (файл в котором содержатся все вызовы к базе данных)
-    # +todo: Репозиторий должен возращать dto или примитивные типы данный, но не кверисет
-    # todo: *Реализовать подключение к репозиторию через интерфейс
-    # todo: погуглуть - как должны взаимодействовать приложения между собой в модульном монолите (usecase одного приложения требуется получить инф-ия usecase другого приложения с точки зрения чистой архитектуры)
-    # todo: прочитать про ngnix
-    # todo: арендовать сервер для этого проекта myfirstfds-сервер https://my.firstvds.ru/ подключится к нему через ssh, нужен логин пароль и ip-адрес, сервер ubuntu
-    # todo: с помощью неросети установить на сервер гит и прописать ключи в гитхабе
-    # todo: купить домен для этого проекта
+    # todo: Внести Invalid HTTP_HOST header: '157.22.198.106:8000'. You may need to add '157.22.198.106' to ALLOWED_HOSTS в сеттингс
+    # todo: сделать новую ветку, в ветки внести изменения выше (ALLOWED_HOSTS) в новой ветки, сделать комит, сделать пуш на сервер, сделать пул-реквест в мастер ветку
+    # todo: после этого нужно разрешить слияние (merge), после этого нужно обновить код на сервере (сделать гит-пул) и собрать контейнеры заново.
+    # todo: установить утилиту на сервер btop
+    # todo: Купить домен
+    # todo: обновить проект, сделать что-то новое и обновить проект на сервере
+    # todo: ветки, слияния, pull-requsts* напоминание
+
     # Получаем последнюю запись через репозиторий
 
     ballon_mass_dto = BallonMassRepository.get_last_ballon_mass()
@@ -22,7 +22,7 @@ def baloon_calculate(dto_input) -> str:
         return "Нет данных о массе газов в баллоне"
 
     OXYGEN_BALLON = ballon_mass_dto.oxygen
-    ARGON_BALLON = ballon_mass_dto.argon   # argon из DTO – str, приводим к float
+    ARGON_BALLON = ballon_mass_dto.argon  # argon из DTO – str, приводим к float
     NITROGEN_BALLON = ballon_mass_dto.nitrogen
     print(ballon_mass_dto)
 
@@ -120,5 +120,3 @@ def pressure_nitrogen(volume_liters, pressure_bar, temperature_Celsius):
     mass_kg_nitrogen = (pressure_pascals * volume_cubic_meters * M) / (R * temperature_kelvins)
 
     return mass_kg_nitrogen
-
-

@@ -20,5 +20,5 @@ def app_ballon(request):
     print(dto)
     result = baloon_calculate(dto)
 
-    print("##########", dto, result)
+    print("##########ВСЕ ХОРОШО РАБОТАЕТ", dto, result)
     return JsonResponse({"result": result})

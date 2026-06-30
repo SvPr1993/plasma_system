@@ -11,6 +11,8 @@ services:
     working_dir: /app
     environment:
       - PYTHONPATH=/app
+    image: my-image:latest
+    restart: always
 
  # redis:
  #   image: redis

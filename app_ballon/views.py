@@ -22,3 +22,7 @@ def app_ballon(request):
 
     print("##########ВСЕ ХОРОШО РАБОТАЕТ", dto, result)
     return JsonResponse({"result": result})
+
+
+def landing(request):
+    return render(request, 'index.html')

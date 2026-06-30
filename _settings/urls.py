@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from app_ballon import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.landing, name='home'),
     path('doubler/', include("doubler.urls")),
     path('ballon/', include("app_ballon.urls")),
     path('vacuum/', include("app_vacuum.urls")),

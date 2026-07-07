@@ -11,6 +11,7 @@ services:
     working_dir: /app
     environment:
       - PYTHONPATH=/app
+      - DEBUG=false
     image: my-image:latest
     restart: always
 

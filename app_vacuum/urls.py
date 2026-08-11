@@ -1,6 +1,10 @@
+# vacuum/urls.py
+
 from django.urls import path
-from app_vacuum.views import app_vacuum
+from . import views
+
+app_name = 'vacuum'
 
 urlpatterns = [
-    path('', app_vacuum),
+    path('', views.check_vacuum, name='check_vacuum'),
 ]

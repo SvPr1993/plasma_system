@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'doubler',
     'app_ballon',
     'app_vacuum',
+    'drf_yasg',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

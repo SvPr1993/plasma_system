@@ -1,3 +1,4 @@
 Django==5.2.12
 python-decouple==3.8
 gunicorn== 26.0.0
+djangorestframework~=3.17.1

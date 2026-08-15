@@ -37,14 +37,13 @@ schema_view = get_schema_view(
 )
 
 
-urlpatterns = [
+urlpatterns = ([
     path('admin/', admin.site.urls),
     path('', views.landing, name='home'),
-    path('doubler/', include("doubler.urls")),
     path('ballon/', include("app_ballon.urls")),
     path('vacuum/', include("app_vacuum.urls")),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-]
 
+])

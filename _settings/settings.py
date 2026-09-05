@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from celery import Celery
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -27,7 +27,6 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = ["157.22.198.106", "plasma-system.ru", "127.0.0.1", "localhost", "www.plasma-system.ru"]
-
 
 # Application definition
 
@@ -53,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    '_settings.middleware.ThrottleMiddleware',
 
 ]
 
@@ -75,7 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = '_settings.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -85,7 +84,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -105,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -117,7 +114,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
@@ -128,3 +124,58 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/second',  # ограничение для анонимов
+        'user': '5/second',  # для авторизованных (если понадобится)
+    }
+}
+
+# Устанавливаем переменную окружения для настроек Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', '_settings.settings')
+
+app = Celery('_settings')
+
+# Загружаем конфигурацию из Django-настроек с префиксом CELERY_
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+# Автоматически обнаруживаем задачи во всех установленных приложениях
+app.autodiscover_tasks()
+
+
+@app.task(bind=True, ignore_result=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
+
+
+# --- Celery ---
+CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://redis:6379/0')
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Настройки для django-celery-beat
+INSTALLED_APPS += ['django_celery_beat', 'django_celery_results']
+
+# Использовать базу данных для хранения результатов (опционально)
+CELERY_RESULT_BACKEND = 'django-db'  # если хотите хранить в БД, закомментируйте redis-бэкенд
+# Если используете django-db, выполните миграции:
+# python manage.py migrate django_celery_results
+
+# Планировщик Beat
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Настройки для Flower (если нужно ограничить доступ)
+FLOWER_BASIC_AUTH = config('FLOWER_BASIC_AUTH', default='admin:pass')
+
+# Throttling (глобальный RPS лимит)
+THROTTLE_ENABLED = config('THROTTLE_ENABLED', default=False, cast=bool)
+THROTTLE_RATE = config('THROTTLE_RATE', default=10, cast=int)
+THROTTLE_EXEMPT_PATHS = config(
+    'THROTTLE_EXEMPT_PATHS',
+    default='/admin/,/static/,/media/',
+    cast=lambda v: [p.strip() for p in v.split(',') if p.strip()]
+)
+THROTTLE_REDIS_URL = config('THROTTLE_REDIS_URL', default=None)

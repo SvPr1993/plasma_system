@@ -5,7 +5,9 @@ from app_ballon.dto import DTOInput
 from app_ballon.usecase import baloon_calculate
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.decorators import api_view  # <-- добавить импорт
+from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.throttling import AnonRateThrottle
 
 # Параметры запроса (GET) – остаются без изменений
 volume_param = openapi.Parameter('volume_liters', openapi.IN_QUERY, description="Объём в литрах",
@@ -39,6 +41,7 @@ temperature_param = openapi.Parameter('temperature_Celsius', openapi.IN_QUERY, d
     }
 )
 @api_view(['GET'])
+@throttle_classes([AnonRateThrottle])
 def app_ballon(request):
     volume_liters = request.GET.get('volume_liters')
     pressure_bar = request.GET.get('pressure_bar')

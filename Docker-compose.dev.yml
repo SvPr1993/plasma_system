@@ -11,7 +11,53 @@ services:
     working_dir: /app
     environment:
       - PYTHONPATH=/app
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
 
+  celery_worker:
+    build: .
+    command: celery -A _settings worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - web
+
+  celery_beat:
+    build: .
+    command: celery -A _settings beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - web
+
+  flower:
+    image: mher/flower:2.0
+    command: celery -A _settings flower --port=5555 --basic_auth=admin:pass
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    volumes:
+      - redis_volume:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  redis_volume:
  # redis:
  #   image: redis
  #   #volumes:
